@@ -2,12 +2,14 @@ from tensorflow import keras as tf
 import cv2
 import numpy as np
 from collections import Counter
+from sklearn.preprocessing import LabelEncoder
 import os
 
 
 class Dataset:
-    def __init__(self, path_of_dataset=None):
+    def __init__(self, arch, path_of_dataset=None):
         self.n_classes = 0
+        self.bad_data = []
         self.X = []
         self.Y = []
         self.classes = []
@@ -18,7 +20,8 @@ class Dataset:
             self.one_hot_encoding()
             self.getMaxOccuringShape()
             self.normalize()
-            self.flatten()
+            if arch == "dense":
+                self.flatten()
             self.convertToArray()
 
     def populate_dataset(self):
@@ -28,7 +31,7 @@ class Dataset:
             self.classes.append(directory)
             self.n_classes += 1
             for img in os.listdir(os.path.join(self.path_of_dataset, directory)):
-                if img.startswith('.'):
+                if img.startswith('.') or img.startswith('_'):
                     continue
                 try:
                     self.X.append(cv2.imread(os.path.join(self.path_of_dataset, directory, img)))
@@ -38,30 +41,36 @@ class Dataset:
         print('Classes: ', self.classes)
 
     def one_hot_encoding(self):
-        self.Y = tf.utils.to_categorical(self.Y, self.n_classes)
+        encoder = LabelEncoder()
+        self.Y = encoder.fit_transform(self.Y)
+        self.Y = tf.utils.to_categorical(self.Y)
 
     def getMaxOccuringShape(self):
         shapes = []
         for i in range(len(self.X)):
             self.X[i] = np.array(self.X[i])
-            shapes.append(self.X[i].shape)
+            if len(self.X[i].shape) > 1:
+                shapes.append(self.X[i].shape)
         self.maxOccuringShape = Counter(shapes).most_common()
         print('Shape: ', self.maxOccuringShape[0][0])
 
     def normalize(self):
         for i in range(len(self.X)):
             try:
-                cv2.resize(self.X[i], self.maxOccuringShape[0][0][:2], self.X[i])
-                cv2.normalize(self.X[i], self.X[i], 0, 1, cv2.NORM_MINMAX, cv2.CV_32F)
+                self.X[i] = cv2.resize(self.X[i], self.maxOccuringShape[0][0][:2], self.X[i])
+                self.X[i] = cv2.normalize(self.X[i], self.X[i], 0, 1, cv2.NORM_MINMAX, cv2.CV_32F)
             except:
-                self.X[i] = np.zeros(self.maxOccuringShape)
+                self.bad_data.append(i)
 
     def flatten(self):
         for i in range(len(self.X)):
             self.X[i] = np.array(self.X[i]).ravel()
 
     def convertToArray(self):
-        self.X = np.array(self.X)
+        for i in self.bad_data:
+            np.delete(self.Y, i)
+            np.delete(self.X, i)
+        self.X = np.asarray(self.X, dtype=np.float)
         self.Y = np.array(self.Y)
 
 
@@ -72,7 +81,7 @@ class DenseNet:
         self.model = tf.models.Model()
         self.use_pretrained_model = use_pretrained_model
         if use_pretrained_model:
-            self.dataset = Dataset()
+            self.dataset = Dataset(arch='dense')
             items = list(os.listdir(model_path))
             if 'nnio.l.cfg' not in items:
                 print('Err: Not a valid model path, Configuration missing')
@@ -90,10 +99,9 @@ class DenseNet:
             self.neurons_per_layer = neurons_per_layer
             self.activations = activations
             self.epochs = epochs
-            self.dataset = Dataset(path_of_dataset)
+            self.dataset = Dataset('dense', path_of_dataset)
             self.DenseNet()
             self.fit()
-        pass
 
     def DenseNet(self):
         self.model = tf.models.Sequential()
@@ -118,9 +126,9 @@ class DenseNet:
         img = cv2.imread(x)
         if self.use_pretrained_model:
             self.model = tf.models.load_model(self.model_path)
-            cv2.resize(img, tuple(self.dataset.maxOccuringShape), img)
+            img = cv2.resize(img, tuple(self.dataset.maxOccuringShape), img)
         else:
-            cv2.resize(img, self.dataset.maxOccuringShape[0][0][:2], img)
+            img = cv2.resize(img, self.dataset.maxOccuringShape[0][0][:2], img)
         cv2.normalize(img, img, 0, 1, cv2.NORM_MINMAX, cv2.CV_32F)
         img = np.array(img)
         img = img.ravel()
@@ -128,7 +136,6 @@ class DenseNet:
         print("Prediction: ", np.array(self.model.predict(img)).argmax())
 
 
-
-test = DenseNet(use_pretrained_model=False, path_of_dataset='/Users/praneets/Downloads/mnist_png/training', neurons_per_layer=[784,382,192,64], activations=['relu','relu','relu','relu'], model_path='/Users/praneets/Desktop/mnist_2', epochs=2)
+test = DenseNet(use_pretrained_model=False, path_of_dataset='/Users/praneets/Downloads/archive/training_set/training_set', neurons_per_layer=[784,382,192,64], activations=['relu','relu','relu','relu'], model_path='/Users/praneets/Desktop/catvdog', epochs=2)
 #test = DenseNet(use_pretrained_model=True, model_path='/Users/praneets/Desktop/mnist_mlp')
 test.predict('/Users/praneets/Downloads/mnist_png/testing/7/17.png')
