@@ -134,8 +134,5 @@ class DenseNet:
         img = img.ravel()
         img = np.expand_dims(img, 0)
         print("Prediction: ", np.array(self.model.predict(img)).argmax())
-
-
-test = DenseNet(use_pretrained_model=False, path_of_dataset='/Users/praneets/Downloads/archive/training_set/training_set', neurons_per_layer=[784,382,192,64], activations=['relu','relu','relu','relu'], model_path='/Users/praneets/Desktop/catvdog', epochs=2)
-#test = DenseNet(use_pretrained_model=True, model_path='/Users/praneets/Desktop/mnist_mlp')
-test.predict('/Users/praneets/Downloads/mnist_png/testing/7/17.png')
+        
+        
