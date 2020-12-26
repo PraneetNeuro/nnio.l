@@ -10,28 +10,28 @@ opencv-python
 1. Multilayer Perceptron [Image classification]
 
 ## Dataset format:
-Dataset
-  |__LABEL 1
-     |__IMG 1
-     |__IMG 2
-     .
-     .
-     |__IMG n
-  |__LABEL 2
-     |__IMG 1
-     |__IMG 2
-     .
-     .
-     |__IMG n
-  .
-  .
-  .
-  |__LABEL n
-     |__IMG 1
-     |__IMG 2
-     .
-     .
-     |__IMG n
+Dataset\
+  |__LABEL 1\
+     |__IMG 1\
+     |__IMG 2\
+     .\
+     .\
+     |__IMG n\
+  |__LABEL 2\
+     |__IMG 1\
+     |__IMG 2\
+     .\
+     .\
+     |__IMG n\
+  .\
+  .\
+  .\
+  |__LABEL n\
+     |__IMG 1\
+     |__IMG 2\
+     .\
+     .\
+     |__IMG n\
   
 
 ## Example [Creating and training a new MLP]:
