@@ -6,6 +6,9 @@ Tensorflow==2.4.0\
 scikit-learn==0.24.0\
 opencv-python
 
+## Supported architectures:
+1. Multilayer Perceptron [Image classification]
+
 ## Example [Creating and training a new MLP]:
 ```
 import nniol
