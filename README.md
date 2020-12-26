@@ -31,7 +31,7 @@ Dataset\
      |__IMG 2\
      .\
      .\
-     |__IMG n\
+     |__IMG n
   
 
 ## Example [Creating and training a new MLP]:
