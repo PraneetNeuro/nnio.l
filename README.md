@@ -11,27 +11,27 @@ opencv-python
 
 ## Dataset format:
 Dataset\
-  |__LABEL 1\
-     |__IMG 1\
-     |__IMG 2\
-     .\
-     .\
-     |__IMG n\
-  |__LABEL 2\
-     |__IMG 1\
-     |__IMG 2\
-     .\
-     .\
-     |__IMG n\
-  .\
-  .\
-  .\
-  |__LABEL n\
-     |__IMG 1\
-     |__IMG 2\
-     .\
-     .\
-     |__IMG n
+&nbsp;&nbsp;|__LABEL 1\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|__IMG 1\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|__IMG 2\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|__IMG n\
+&nbsp;&nbsp;|__LABEL 2\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|__IMG 1\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|__IMG 2\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|__IMG n\
+&nbsp;&nbsp;.\
+&nbsp;&nbsp;.\
+&nbsp;&nbsp;.\
+&nbsp;&nbsp;|__LABEL n\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|__IMG 1\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|__IMG 2\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.\
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|__IMG n
   
 
 ## Example [Creating and training a new MLP]:
