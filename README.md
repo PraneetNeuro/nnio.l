@@ -14,7 +14,7 @@ nn = DenseNet(use_pretrained_model=False, path_of_dataset='<PATH OF DATASET HERE
 
 nn.predict('<PATH OF DATA TO PASS FOR INFERENCE>')
 ```
-##Example [USING A PRETRAINED MLP]:
+## Example [USING A PRETRAINED MLP]:
 ```
 import nniol
 
