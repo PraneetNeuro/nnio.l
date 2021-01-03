@@ -89,10 +89,13 @@ class DenseNet:
             with open(os.path.join(model_path, 'nnio.l.cfg'), 'r') as f:
                 config = f.readlines()
                 self.dataset.n_classes = int(config[1].replace('\n', ''))
-                self.dataset.maxOccuringShape = config[2].replace('\n', '').replace('[','').replace(']','').replace('(','').replace(')','').split(',')[:2]
-                self.dataset.maxOccuringShape = [int(i.replace(' ',  '')) for i in self.dataset.maxOccuringShape]
+                self.dataset.maxOccuringShape = config[2].replace('\n', '').replace('[', '').replace(']', '').replace(
+                    '(', '').replace(')', '').split(',')[:2]
+                self.dataset.maxOccuringShape = [int(i.replace(' ', '')) for i in self.dataset.maxOccuringShape]
                 self.dataset.classes = config[0].replace('\n', '')
-                print('Model initialized with:\n{}\n{}\n{}'.format(self.dataset.n_classes, self.dataset.maxOccuringShape, self.dataset.classes))
+                print(
+                    'Model initialized with:\n{}\n{}\n{}'.format(self.dataset.n_classes, self.dataset.maxOccuringShape,
+                                                                 self.dataset.classes))
         else:
             assert path_of_dataset is not None and neurons_per_layer is not None and activations is not None and model_path is not None and epochs is not None, "Err: Required args not passed for object initialization"
             self.path_of_dataset = path_of_dataset
@@ -134,5 +137,69 @@ class DenseNet:
         img = img.ravel()
         img = np.expand_dims(img, 0)
         print("Prediction: ", np.array(self.model.predict(img)).argmax())
-        
-        
+
+
+class ConvNet:
+    def __init__(self, use_pretrained_model, path_of_dataset=None, filters_per_layer=None, activations=None,
+                 model_path=None, epochs=None):
+        self.model_path = model_path
+        self.model = tf.models.Model()
+        self.use_pretrained_model = use_pretrained_model
+        if use_pretrained_model:
+            self.dataset = Dataset(arch='conv')
+            items = list(os.listdir(model_path))
+            if 'nnio.l.cfg' not in items:
+                print('Err: Not a valid model path, Configuration missing')
+                return
+            with open(os.path.join(model_path, 'nnio.l.cfg'), 'r') as f:
+                config = f.readlines()
+                self.dataset.n_classes = int(config[1].replace('\n', ''))
+                self.dataset.maxOccuringShape = config[2].replace('\n', '').replace('[', '').replace(']', '').replace(
+                    '(', '').replace(')', '').split(',')[:2]
+                self.dataset.maxOccuringShape = [int(i.replace(' ', '')) for i in self.dataset.maxOccuringShape]
+                self.dataset.classes = config[0].replace('\n', '')
+                print(
+                    'Model initialized with:\n{}\n{}\n{}'.format(self.dataset.n_classes, self.dataset.maxOccuringShape,
+                                                                 self.dataset.classes))
+        else:
+            assert path_of_dataset is not None and filters_per_layer is not None and activations is not None and model_path is not None and epochs is not None, "Err: Required args not passed for object initialization"
+            self.path_of_dataset = path_of_dataset
+            self.filters_per_layer = filters_per_layer
+            self.activations = activations
+            self.epochs = epochs
+            self.dataset = Dataset('conv', path_of_dataset)
+            self.ConvNet()
+            self.summary()
+            self.fit()
+
+    def ConvNet(self):
+        self.model = tf.models.Sequential()
+        self.model.add(tf.Input((self.dataset.maxOccuringShape[0][0])))
+        for i in range(len(self.filters_per_layer)):
+            self.model.add(tf.layers.Conv2D(self.filters_per_layer[i], kernel_size=(3, 3), activation=self.activations[i]))
+        self.model.add(tf.layers.Flatten())
+        self.model.add(tf.layers.Dense(self.dataset.n_classes, activation='softmax'))
+        self.model.compile(optimizer='adam', loss='categorical_crossentropy')
+
+    def summary(self):
+        self.model.summary()
+
+    def fit(self):
+        self.model.fit(self.dataset.X, self.dataset.Y, epochs=self.epochs)
+        self.model.save(self.model_path)
+        with open(os.path.join(self.model_path, 'nnio.l.cfg'), 'w') as f:
+            f.write(str(self.dataset.classes) + '\n')
+            f.write(str(self.dataset.n_classes) + '\n')
+            f.write(str(self.dataset.maxOccuringShape) + '\n')
+
+    def predict(self, x):
+        img = cv2.imread(x)
+        if self.use_pretrained_model:
+            self.model = tf.models.load_model(self.model_path)
+            img = cv2.resize(img, tuple(self.dataset.maxOccuringShape), img)
+        else:
+            img = cv2.resize(img, self.dataset.maxOccuringShape[0][0][:2], img)
+        cv2.normalize(img, img, 0, 1, cv2.NORM_MINMAX, cv2.CV_32F)
+        img = np.array(img)
+        img = np.expand_dims(img, 0)
+        print("Prediction: ", np.array(self.model.predict(img)).argmax())
