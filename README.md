@@ -8,6 +8,7 @@ opencv-python
 
 ## Supported architectures:
 1. Multilayer Perceptron [Image classification]
+2. Convolutional Nerual Network [Image classification]
 
 ## Dataset format:
 Dataset\
