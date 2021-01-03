@@ -50,3 +50,19 @@ import nniol
 nn = DenseNet(use_pretrained_model=True, model_path='<PATH OF SAVED MODEL>')
 nn.predict('<PATH OF DATA TO PASS FOR INFERENCE>')
 ```
+
+## Example [Creating and training a new CNN]:
+```
+import nniol
+
+nn = ConvNet(use_pretrained_model=False, path_of_dataset='<PATH OF DATASET HERE>', filters_per_layer=[<LIST OF INTEGERS SPECIFYING THE NUMBER OF FILTERS IN EACH LAYER>], activations=[<LIST OF STRINGS SPECIFYING ACTIVATION FUNCTIONS FOR EACH LAYER>], model_path='<PATH TO SAVE MODEL>', epochs=<NUMBER OF EPOCHS TO TRAIN>)
+
+nn.predict('<PATH OF DATA TO PASS FOR INFERENCE>')
+```
+## Example [USING A PRETRAINED CNN]:
+```
+import nniol
+
+nn = ConvNet(use_pretrained_model=True, model_path='<PATH OF SAVED MODEL>')
+nn.predict('<PATH OF DATA TO PASS FOR INFERENCE>')
+```
