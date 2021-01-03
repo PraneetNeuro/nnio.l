@@ -203,11 +203,3 @@ class ConvNet:
         img = np.array(img)
         img = np.expand_dims(img, 0)
         print("Prediction: ", np.array(self.model.predict(img)).argmax())
-
-
-'''test = ConvNet(use_pretrained_model=False,
-               path_of_dataset='/Users/praneets/Downloads/mnist_png/training',
-               filters_per_layer=[128, 64, 32, 16], activations=['relu', 'relu', 'relu', 'relu'],
-               model_path='/Users/praneets/Desktop/cnn_mnist', epochs=2)'''
-test = ConvNet(use_pretrained_model=True, model_path='/Users/praneets/Desktop/cnn_mnist')
-test.predict('/Users/praneets/Downloads/mnist_png/testing/6/11.png')
